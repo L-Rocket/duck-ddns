@@ -10,7 +10,12 @@ import (
 )
 
 func main() {
-	c, err := utils.Get_Config("config/duck-ddns.json")
+	configPath := "config/duck-ddns.json"
+	if len(os.Args) > 1 {
+		configPath = os.Args[1]
+	}
+
+	c, err := utils.Get_Config(configPath)
 	if err != nil {
 		panic(err)
 	}

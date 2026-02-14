@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -21,28 +22,39 @@ func Update_DDNS(c *utils.Config) error {
 	}
 
 	client := &http.Client{Timeout: 10 * time.Second}
-	for _, domain := range c.Domains {
-		domain = strings.TrimSpace(domain)
-		if domain == "" {
-			continue
-		}
 
-		resp, err := client.Get("https://duckdns.org/update/" + domain + "/" + c.Token + "/" + ip)
-		if err != nil {
-			return err
-		}
-		body, readErr := io.ReadAll(resp.Body)
-		resp.Body.Close()
-		if readErr != nil {
-			return readErr
-		}
-		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-			return fmt.Errorf("duckdns update failed for %s: %s", domain, resp.Status)
-		}
-		respText := strings.TrimSpace(string(body))
-		if respText != "OK" {
-			return fmt.Errorf("duckdns update failed for %s: %s", domain, respText)
-		}
+	// DuckDNS supports updating multiple domains in one request by separating them with commas
+	domains := strings.Join(c.Domains, ",")
+
+	u, err := url.Parse("https://www.duckdns.org/update")
+	if err != nil {
+		return fmt.Errorf("failed to parse url: %w", err)
+	}
+
+	q := u.Query()
+	q.Set("domains", domains)
+	q.Set("token", c.Token)
+	q.Set("ip", ip)
+	u.RawQuery = q.Encode()
+
+	resp, err := client.Get(u.String())
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, readErr := io.ReadAll(resp.Body)
+	if readErr != nil {
+		return readErr
+	}
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return fmt.Errorf("duckdns update failed: %s", resp.Status)
+	}
+
+	respText := strings.TrimSpace(string(body))
+	if respText != "OK" {
+		return fmt.Errorf("duckdns update failed: %s", respText)
 	}
 
 	return nil
