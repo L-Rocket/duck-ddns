@@ -1,0 +1,6 @@
+{
+  "domains": ["your domain"],
+  "token": "your token",
+  "update_interval": 300,
+  "log_file": "/var/log/duckdns_updater.log"
+}
