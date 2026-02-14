@@ -101,16 +101,19 @@ fi
 read -p "Enter IP Source URL [default: https://ip.3322.net]: " IP_SOURCE
 IP_SOURCE=${IP_SOURCE:-"https://ip.3322.net"}
 
-# Create Config File
-cat > "$CONFIG_FILE" <<EOF
-{
-  "domains": $DOMAINS_JSON,
-  "token": "$TOKEN",
-  "update_interval": $UPDATE_INTERVAL,
-  "log_file": "/var/log/duck-ddns.log",
-  "ip_source": "$IP_SOURCE"
-}
-EOF
+# Create Config File safely using jq
+jq -n \
+  --argjson domains "$DOMAINS_JSON" \
+  --arg token "$TOKEN" \
+  --argjson interval "$UPDATE_INTERVAL" \
+  --arg ip_source "$IP_SOURCE" \
+  '{
+    domains: $domains,
+    token: $token,
+    update_interval: $interval,
+    log_file: "/var/log/duck-ddns.log",
+    ip_source: $ip_source
+  }' > "$CONFIG_FILE"
 echo "Configuration saved to $CONFIG_FILE"
 
 # Set permissions for config
