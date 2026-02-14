@@ -12,7 +12,7 @@ USER="duckddns"
 
 # Check for root privileges
 if [ "$EUID" -ne 0 ]; then
-  echo "Please run as root"
+  echo "Error: This script must be run as root."
   exit 1
 fi
 
@@ -24,8 +24,14 @@ command_exists() {
 # Check for required tools
 if ! command_exists curl || ! command_exists jq || ! command_exists tar; then
   echo "Error: curl, jq, and tar are required. Please install them first."
+  echo "Example (Ubuntu/Debian): apt-get update && apt-get install -y curl jq tar"
   exit 1
 fi
+
+clear
+echo "========================================"
+echo "   DuckDNS Updater - Installation"
+echo "========================================"
 
 echo "Gathering latest release information..."
 LATEST_RELEASE_URL="https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/latest"
@@ -65,47 +71,71 @@ if ! id "$USER" &>/dev/null; then
     useradd -r -s /bin/false "$USER"
 fi
 
-# Configuration Wizard
-echo ""
-echo "----------------------------------------"
-echo "Configuration Wizard"
-echo "----------------------------------------"
+# Configuration Wizard Loop
+while true; do
+    echo ""
+    echo "----------------------------------------"
+    echo "Configuration Wizard"
+    echo "----------------------------------------"
 
-mkdir -p "$CONFIG_DIR"
+    mkdir -p "$CONFIG_DIR"
 
-# Prompt for Token
-while [ -z "$TOKEN" ]; do
-  read -p "Enter your DuckDNS Token: " TOKEN
+    # Prompt for Token
+    while [ -z "$TOKEN" ]; do
+      read -p "Enter your DuckDNS Token: " TOKEN
+    done
+
+    # Prompt for Domains
+    while [ -z "$DOMAINS" ]; do
+      read -p "Enter your Domains (comma separated, e.g., mydomain,other): " DOMAINS
+    done
+
+    # Convert comma-separated string to JSON array.
+    # Using 'gsub' to trim whitespace around domains.
+    DOMAINS_JSON=$(echo "$DOMAINS" | jq -R 'split(",") | map(gsub("^\\s+|\\s+$";"\\"))')
+
+    # Prompt for Update Interval
+    read -p "Enter Update Interval in seconds [default: 300]: " UPDATE_INTERVAL
+    UPDATE_INTERVAL=${UPDATE_INTERVAL:-300}
+
+    # Validate Update Interval (must be an integer)
+    if ! [[ "$UPDATE_INTERVAL" =~ ^[0-9]+$ ]]; then
+        echo "Warning: Invalid input for update interval. Resetting to default: 300"
+        UPDATE_INTERVAL=300
+    fi
+
+    # Prompt for IP Source
+    read -p "Enter IP Source URL [default: https://ip.3322.net]: " IP_SOURCE
+    IP_SOURCE=${IP_SOURCE:-"https://ip.3322.net"}
+
+    # Validate IP Source
+    if [[ ! "$IP_SOURCE" =~ ^https?:// ]]; then
+        echo "Warning: Invalid IP Source URL. Resetting to default: https://ip.3322.net"
+        IP_SOURCE="https://ip.3322.net"
+    fi
+
+    echo ""
+    echo "----------------------------------------"
+    echo "Review Configuration"
+    echo "----------------------------------------"
+    echo "Token:           $TOKEN"
+    echo "Domains:         $DOMAINS"
+    echo "Update Interval: $UPDATE_INTERVAL"
+    echo "IP Source:       $IP_SOURCE"
+    echo "----------------------------------------"
+    
+    read -p "Is this correct? [Y/n]: " CONFIRM
+    CONFIRM=${CONFIRM:-Y}
+    if [[ "$CONFIRM" =~ ^[Yy]$ ]]; then
+        break
+    else
+        echo "Restarting configuration wizard..."
+        TOKEN=""
+        DOMAINS=""
+        UPDATE_INTERVAL=""
+        IP_SOURCE=""
+    fi
 done
-
-# Prompt for Domains
-while [ -z "$DOMAINS" ]; do
-  read -p "Enter your Domains (comma separated, e.g., mydomain,other): " DOMAINS
-done
-
-# Convert comma-separated string to JSON array.
-# Using 'gsub' to trim whitespace around domains.
-DOMAINS_JSON=$(echo "$DOMAINS" | jq -R 'split(",") | map(gsub("^\\s+|\\s+$";"\\"))')
-
-# Prompt for Update Interval
-read -p "Enter Update Interval in seconds [default: 300]: " UPDATE_INTERVAL
-UPDATE_INTERVAL=${UPDATE_INTERVAL:-300}
-
-# Validate Update Interval (must be an integer)
-if ! [[ "$UPDATE_INTERVAL" =~ ^[0-9]+$ ]]; then
-    echo "Warning: Invalid input for update interval. Using default: 300"
-    UPDATE_INTERVAL=300
-fi
-
-# Prompt for IP Source
-read -p "Enter IP Source URL [default: https://ip.3322.net]: " IP_SOURCE
-IP_SOURCE=${IP_SOURCE:-"https://ip.3322.net"}
-
-# Validate IP Source
-if [[ ! "$IP_SOURCE" =~ ^https?:// ]]; then
-    echo "Warning: Invalid IP Source URL. Resetting to default: https://ip.3322.net"
-    IP_SOURCE="https://ip.3322.net"
-fi
 
 # Create Config File safely using jq
 jq -n \
@@ -113,7 +143,7 @@ jq -n \
   --arg token "$TOKEN" \
   --argjson interval "$UPDATE_INTERVAL" \
   --arg ip_source "$IP_SOURCE" \
-  '{
+  '{ 
     domains: $domains,
     token: $token,
     update_interval: $interval,
