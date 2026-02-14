@@ -2,7 +2,7 @@
 set -e
 
 # Repository information
-REPO_OWNER="L-Rocket" # Replace with your GitHub username
+REPO_OWNER="L-Rocket"
 REPO_NAME="duck-ddns"
 INSTALL_DIR="/usr/local/bin"
 CONFIG_DIR="/etc/duck-ddns"
@@ -83,12 +83,19 @@ while [ -z "$DOMAINS" ]; do
   read -p "Enter your Domains (comma separated, e.g., mydomain,other): " DOMAINS
 done
 
-# Convert comma-separated string to JSON array
+# Convert comma-separated string to JSON array.
+# Using 'gsub' to trim whitespace around domains.
 DOMAINS_JSON=$(echo "$DOMAINS" | jq -R 'split(",") | map(gsub("^\\s+|\\s+$";"\\"))')
 
 # Prompt for Update Interval
 read -p "Enter Update Interval in seconds [default: 300]: " UPDATE_INTERVAL
 UPDATE_INTERVAL=${UPDATE_INTERVAL:-300}
+
+# Validate Update Interval (must be an integer)
+if ! [[ "$UPDATE_INTERVAL" =~ ^[0-9]+$ ]]; then
+    echo "Warning: Invalid input for update interval. Using default: 300"
+    UPDATE_INTERVAL=300
+fi
 
 # Prompt for IP Source
 read -p "Enter IP Source URL [default: https://ip.3322.net]: " IP_SOURCE
