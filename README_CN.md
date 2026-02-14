@@ -1,75 +1,71 @@
-# duck-ddns
+# DuckDNS 动态域名更新工具
 
-中文文档。英文版见 [README.md](README.md)。
+这是一个轻量级、高效的 DuckDNS 客户端，使用 Go 语言编写。
 
-一个用 Go 编写的 DuckDNS 动态域名更新器。当前仓库为项目骨架，包含配置示例与 systemd 服务模板，核心逻辑尚未实现。
+## 特性
 
-## 功能目标
+- **高效**：使用 Go 语言编写，资源占用极低。
+- **批量更新**：使用官方 DuckDNS API，在一次请求中更新所有域名。
+- **自动 IP 检测**：自动检测您的公网 IPv4 地址。
+- **Systemd 集成**：作为后台服务运行，故障时自动重启。
+- **简易安装**：提供适用于 Linux 系统的一键安装脚本。
 
-- 按固定间隔更新 DuckDNS 解析
-- 支持多域名批量更新
-- 记录更新日志，便于排查问题
-- 以 systemd 服务方式运行
+## 安装方法
 
-## 目录结构
+### 方法一：一键安装（推荐）
 
-```
-cmd/duck-ddns/        # 程序入口
-config/duck-ddns.json # 配置示例
-internal/             # 业务逻辑与工具包（待实现）
-logs/                 # 日志目录（可选）
-systemd/duck_ddns.service # systemd 服务示例
-```
-
-## 配置说明
-
-配置文件示例见 [config/duck-ddns.json](config/duck-ddns.json)。
-
-```json
-{
-  "domains": ["your domain"],
-  "token": "your token",
-  "update_interval": 300,
-  "log_file": "/var/log/duckdns_updater.log"
-}
-```
-
-- `domains`: 需要更新的 DuckDNS 域名数组
-- `token`: DuckDNS 账号 token
-- `update_interval`: 更新间隔（秒）
-- `log_file`: 日志文件路径
-
-## 快速开始
-
-1. 按需修改配置文件。
-2. 构建程序：
+此脚本将下载最新版本，安装二进制文件，并引导您完成配置向导。
 
 ```bash
-go build -o duck-ddns ./cmd/duck-ddns
+curl -fsSL https://raw.githubusercontent.com/L-Rocket/duck-ddns/main/install.sh | sudo bash
 ```
 
-3. 运行程序：
+配置向导将询问您的：
+- DuckDNS Token
+- 域名（逗号分隔）
+- 更新间隔（默认：300秒）
+- IP 来源（默认：https://ip.3322.net）
+
+### 方法二：手动安装
+
+1.  从 [Releases](https://github.com/L-Rocket/duck-ddns/releases) 页面**下载**最新的二进制文件。
+2.  **解压**压缩包。
+3.  **移动**二进制文件到系统路径：
+    ```bash
+    sudo mv duck-ddns /usr/local/bin/
+    ```
+4.  **创建配置文件**（例如 `/etc/duck-ddns/config.json`）：
+    ```json
+    {
+      "domains": ["domain1", "domain2"],
+      "token": "your-token-here",
+      "update_interval": 300,
+      "log_file": "/var/log/duck-ddns.log",
+      "ip_source": "https://ip.3322.net"
+    }
+    ```
+5.  **手动运行**或创建 systemd 服务。
+
+## 使用
+
+指定配置文件运行：
 
 ```bash
-./duck-ddns -config ./config/duck-ddns.json
+duck-ddns /path/to/config.json
 ```
 
-> 说明：当前入口文件仍为空，以上命令用于预留后续使用方式。
+如果未提供参数，默认使用当前目录下的 `config/duck-ddns.json`。
 
-## systemd 部署
+## 源码编译
 
-1. 修改 [systemd/duck_ddns.service](systemd/duck_ddns.service) 中的路径与用户信息。
-2. 安装并启动：
+要求：Go 1.22+
 
 ```bash
-sudo cp systemd/duck_ddns.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable --now duck_ddns.service
+git clone https://github.com/L-Rocket/duck-ddns.git
+cd duck-ddns
+go build -o duck-ddns cmd/duck-ddns/main.go
 ```
 
-## 开发计划
+## 许可证
 
-- [ ] 配置解析与校验
-- [ ] DuckDNS 更新请求
-- [ ] 日志与错误处理
-- [ ] 单元测试与 CI
+MIT

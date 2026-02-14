@@ -1,75 +1,71 @@
-# duck-ddns
+# DuckDNS Updater
 
-English documentation. For Chinese, see [README_CN.md](README_CN.md).
+A lightweight, efficient DuckDNS client written in Go.
 
-A DuckDNS dynamic DNS updater written in Go. This repository is currently a skeleton with a config example and a systemd service template; the core logic is not implemented yet.
+## Features
 
-## Goals
+- **Efficient**: Written in Go, minimal resource usage.
+- **Batch Updates**: Updates all your domains in a single request using the official DuckDNS API.
+- **Auto-IP Detection**: Automatically detects your public IPv4 address.
+- **Systemd Integration**: Runs as a background service with automatic restart on failure.
+- **Easy Installation**: One-click install script for Linux systems.
 
-- Update DuckDNS records on a fixed interval
-- Support multiple domains in one run
-- Write update logs for troubleshooting
-- Run as a systemd service
+## Installation
 
-## Structure
+### Method 1: One-Click Install (Recommended)
 
-```
-cmd/duck-ddns/            # Program entry
-config/duck-ddns.json     # Config example
-internal/                 # Business logic and utils (to be implemented)
-logs/                     # Log directory (optional)
-systemd/duck_ddns.service # systemd service example
-```
-
-## Configuration
-
-See [config/duck-ddns.json](config/duck-ddns.json).
-
-```json
-{
-	"domains": ["your domain"],
-	"token": "your token",
-	"update_interval": 300,
-	"log_file": "/var/log/duckdns_updater.log"
-}
-```
-
-- `domains`: DuckDNS domain list to update
-- `token`: DuckDNS account token
-- `update_interval`: update interval in seconds
-- `log_file`: log file path
-
-## Quick Start
-
-1. Update the config file as needed.
-2. Build:
+This script will download the latest release, install the binary, and guide you through the configuration wizard.
 
 ```bash
-go build -o duck-ddns ./cmd/duck-ddns
+curl -fsSL https://raw.githubusercontent.com/L-Rocket/duck-ddns/main/install.sh | sudo bash
 ```
 
-3. Run:
+The wizard will ask for your:
+- DuckDNS Token
+- Domains (comma-separated)
+- Update Interval (default: 300s)
+- IP Source (default: https://ip.3322.net)
+
+### Method 2: Manual Installation
+
+1.  **Download** the latest binary from the [Releases](https://github.com/L-Rocket/duck-ddns/releases) page.
+2.  **Extract** the archive.
+3.  **Move** the binary to your path:
+    ```bash
+    sudo mv duck-ddns /usr/local/bin/
+    ```
+4.  **Create a config file** (e.g., `/etc/duck-ddns/config.json`):
+    ```json
+    {
+      "domains": ["domain1", "domain2"],
+      "token": "your-token-here",
+      "update_interval": 300,
+      "log_file": "/var/log/duck-ddns.log",
+      "ip_source": "https://ip.3322.net"
+    }
+    ```
+5.  **Run** manually or create a systemd service.
+
+## Usage
+
+Run with a specific configuration file:
 
 ```bash
-./duck-ddns -config ./config/duck-ddns.json
+duck-ddns /path/to/config.json
 ```
 
-Note: the entrypoint is currently empty; these commands show the intended usage.
+If no argument is provided, it defaults to `config/duck-ddns.json` relative to the current directory.
 
-## systemd Deployment
+## Build from Source
 
-1. Edit [systemd/duck_ddns.service](systemd/duck_ddns.service) with the correct paths and user.
-2. Install and start:
+Requirements: Go 1.22+
 
 ```bash
-sudo cp systemd/duck_ddns.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable --now duck_ddns.service
+git clone https://github.com/L-Rocket/duck-ddns.git
+cd duck-ddns
+go build -o duck-ddns cmd/duck-ddns/main.go
 ```
 
-## Roadmap
+## License
 
-- [ ] Config parsing and validation
-- [ ] DuckDNS update request
-- [ ] Logging and error handling
-- [ ] Unit tests and CI
+MIT
