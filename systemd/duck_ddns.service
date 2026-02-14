@@ -1,0 +1,15 @@
+[Unit]
+Description=DuckDNS updater
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=duckddns
+Group=duckddns
+ExecStart=/usr/local/bin/duck-ddns -config /etc/duck-ddns/duck-ddns.json
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

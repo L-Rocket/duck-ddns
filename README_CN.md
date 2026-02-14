@@ -1,6 +1,6 @@
 # duck-ddns
 
-中文文档。英文版见 [README_EN.md](README_EN.md)。
+中文文档。英文版见 [README.md](README.md)。
 
 一个用 Go 编写的 DuckDNS 动态域名更新器。当前仓库为项目骨架，包含配置示例与 systemd 服务模板，核心逻辑尚未实现。
 

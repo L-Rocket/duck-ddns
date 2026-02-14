@@ -1,0 +1,10 @@
+/var/log/duckdns_updater.log {
+    size 10M
+    rotate 7
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+    create 0644 duckddns duckddns
+}
