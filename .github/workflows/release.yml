@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build
+        run: |
+          GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o duck-ddns-linux-amd64 cmd/duck-ddns/main.go
+          tar -czvf duck-ddns-linux-amd64.tar.gz duck-ddns-linux-amd64
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: duck-ddns-linux-amd64.tar.gz
