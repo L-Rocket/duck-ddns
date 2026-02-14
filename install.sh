@@ -80,22 +80,22 @@ while true; do
 
     mkdir -p "$CONFIG_DIR"
 
-    # Prompt for Token
+    # Prompt for Token (reading from /dev/tty for pipe support)
     while [ -z "$TOKEN" ]; do
-      read -p "Enter your DuckDNS Token: " TOKEN
+      read -p "Enter your DuckDNS Token: " TOKEN < /dev/tty
     done
 
-    # Prompt for Domains
+    # Prompt for Domains (reading from /dev/tty for pipe support)
     while [ -z "$DOMAINS" ]; do
-      read -p "Enter your Domains (comma separated, e.g., mydomain,other): " DOMAINS
+      read -p "Enter your Domains (comma separated, e.g., mydomain,other): " DOMAINS < /dev/tty
     done
 
     # Convert comma-separated string to JSON array.
     # Using 'gsub' to trim whitespace around domains.
     DOMAINS_JSON=$(echo "$DOMAINS" | jq -R 'split(",") | map(gsub("^\\s+|\\s+$";"\\"))')
 
-    # Prompt for Update Interval
-    read -p "Enter Update Interval in seconds [default: 300]: " UPDATE_INTERVAL
+    # Prompt for Update Interval (reading from /dev/tty)
+    read -p "Enter Update Interval in seconds [default: 300]: " UPDATE_INTERVAL < /dev/tty
     UPDATE_INTERVAL=${UPDATE_INTERVAL:-300}
 
     # Validate Update Interval (must be an integer)
@@ -104,8 +104,8 @@ while true; do
         UPDATE_INTERVAL=300
     fi
 
-    # Prompt for IP Source
-    read -p "Enter IP Source URL [default: https://ip.3322.net]: " IP_SOURCE
+    # Prompt for IP Source (reading from /dev/tty)
+    read -p "Enter IP Source URL [default: https://ip.3322.net]: " IP_SOURCE < /dev/tty
     IP_SOURCE=${IP_SOURCE:-"https://ip.3322.net"}
 
     # Validate IP Source
@@ -124,7 +124,8 @@ while true; do
     echo "IP Source:       $IP_SOURCE"
     echo "----------------------------------------"
     
-    read -p "Is this correct? [Y/n]: " CONFIRM
+    # Confirm (reading from /dev/tty)
+    read -p "Is this correct? [Y/n]: " CONFIRM < /dev/tty
     CONFIRM=${CONFIRM:-Y}
     if [[ "$CONFIRM" =~ ^[Yy]$ ]]; then
         break
