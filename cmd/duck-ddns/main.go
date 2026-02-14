@@ -55,5 +55,6 @@ func setupLog(logFile string) (*os.File, error) {
 		return nil, err
 	}
 	log.SetOutput(file)
+	log.Println("DuckDNS updater started")
 	return file, nil
 }

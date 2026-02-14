@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -57,5 +58,6 @@ func Update_DDNS(c *utils.Config) error {
 		return fmt.Errorf("duckdns update failed: %s", respText)
 	}
 
+	log.Printf("Successfully updated domains %s to IP %s", domains, ip)
 	return nil
 }
