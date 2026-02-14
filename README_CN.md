@@ -66,6 +66,14 @@ cd duck-ddns
 go build -o duck-ddns cmd/duck-ddns/main.go
 ```
 
+## 卸载
+
+从系统中移除 DuckDNS Updater：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/L-Rocket/duck-ddns/main/uninstall.sh | sudo bash
+```
+
 ## 许可证
 
 MIT

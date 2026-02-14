@@ -66,6 +66,14 @@ cd duck-ddns
 go build -o duck-ddns cmd/duck-ddns/main.go
 ```
 
+## Uninstallation
+
+To remove DuckDNS Updater from your system:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/L-Rocket/duck-ddns/main/uninstall.sh | sudo bash
+```
+
 ## License
 
 MIT
