@@ -101,6 +101,12 @@ fi
 read -p "Enter IP Source URL [default: https://ip.3322.net]: " IP_SOURCE
 IP_SOURCE=${IP_SOURCE:-"https://ip.3322.net"}
 
+# Validate IP Source
+if [[ ! "$IP_SOURCE" =~ ^https?:// ]]; then
+    echo "Warning: Invalid IP Source URL. Resetting to default: https://ip.3322.net"
+    IP_SOURCE="https://ip.3322.net"
+fi
+
 # Create Config File safely using jq
 jq -n \
   --argjson domains "$DOMAINS_JSON" \
