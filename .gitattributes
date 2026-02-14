@@ -1,0 +1,5 @@
+# Ignore shell scripts in language statistics
+*.sh linguist-vendored
+
+# Ensure Go files are detected correctly (optional, usually automatic)
+*.go linguist-detectable=true
