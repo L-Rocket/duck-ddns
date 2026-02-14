@@ -1,5 +1,7 @@
 # DuckDNS 动态域名更新工具
 
+[English](README.md)
+
 这是一个轻量级、高效的 DuckDNS 客户端，使用 Go 语言编写。
 
 ## 特性

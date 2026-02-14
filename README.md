@@ -1,5 +1,7 @@
 # DuckDNS Updater
 
+[中文](README_CN.md)
+
 A lightweight, efficient DuckDNS client written in Go.
 
 ## Features
