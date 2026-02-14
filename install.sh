@@ -2,7 +2,7 @@
 set -e
 
 # Repository information
-REPO_OWNER="lea" # Replace with your GitHub username
+REPO_OWNER="L-Rocket" # Replace with your GitHub username
 REPO_NAME="duck-ddns"
 INSTALL_DIR="/usr/local/bin"
 CONFIG_DIR="/etc/duck-ddns"
