@@ -66,6 +66,20 @@ cd duck-ddns
 go build -o duck-ddns cmd/duck-ddns/main.go
 ```
 
+## 日志与维护
+
+默认情况下，日志写入 `/var/log/duck-ddns.log`。
+
+### 查看日志
+```bash
+sudo tail -f /var/log/duck-ddns.log
+```
+
+### 查看服务状态
+```bash
+sudo systemctl status duck-ddns
+```
+
 ## 卸载
 
 从系统中移除 DuckDNS Updater：

@@ -66,6 +66,20 @@ cd duck-ddns
 go build -o duck-ddns cmd/duck-ddns/main.go
 ```
 
+## Logging and Maintenance
+
+By default, logs are written to `/var/log/duck-ddns.log`.
+
+### View Logs
+```bash
+sudo tail -f /var/log/duck-ddns.log
+```
+
+### Check Service Status
+```bash
+sudo systemctl status duck-ddns
+```
+
 ## Uninstallation
 
 To remove DuckDNS Updater from your system:
