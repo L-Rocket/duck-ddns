@@ -30,6 +30,12 @@ if [ -f "$SERVICE_FILE" ]; then
     echo "Removed $SERVICE_FILE"
 fi
 
+echo "Removing logrotate configuration..."
+if [ -f "/etc/logrotate.d/duck-ddns" ]; then
+    rm "/etc/logrotate.d/duck-ddns"
+    echo "Removed /etc/logrotate.d/duck-ddns"
+fi
+
 echo "Removing binary..."
 if [ -f "$BINARY_PATH" ]; then
     rm "$BINARY_PATH"

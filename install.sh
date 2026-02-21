@@ -181,6 +181,21 @@ RestartSec=5s
 WantedBy=multi-user.target
 EOF
 
+# Create Logrotate Configuration
+echo "Creating logrotate configuration..."
+cat > "/etc/logrotate.d/duck-ddns" <<EOF
+$LOG_FILE {
+    size 10M
+    rotate 7
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+    create 0644 $USER $USER
+}
+EOF
+
 echo "Reloading systemd daemon..."
 systemctl daemon-reload
 

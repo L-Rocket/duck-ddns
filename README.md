@@ -9,6 +9,7 @@ A lightweight, efficient DuckDNS client written in Go.
 - **Efficient**: Written in Go, minimal resource usage.
 - **Batch Updates**: Updates all your domains in a single request using the official DuckDNS API.
 - **Auto-IP Detection**: Automatically detects your public IPv4 address.
+- **Log Management**: Built-in log rotation (10MB per file, 7 rotations) via logrotate.
 - **Systemd Integration**: Runs as a background service with automatic restart on failure.
 - **Easy Installation**: One-click install script for Linux systems.
 
@@ -70,7 +71,7 @@ go build -o duck-ddns cmd/duck-ddns/main.go
 
 ## Logging and Maintenance
 
-By default, logs are written to `/var/log/duck-ddns.log`.
+By default, logs are written to `/var/log/duck-ddns.log`. The installation script sets up **logrotate** to prevent the log file from growing indefinitely (limits to 10MB per file, keeping up to 7 historical logs).
 
 ### View Logs
 ```bash
