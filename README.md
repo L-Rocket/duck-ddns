@@ -49,6 +49,18 @@ The wizard will ask for your:
     ```
 5.  **Run** manually or create a systemd service.
 
+### Method 3: Docker
+
+The image is published to GitHub Container Registry: `ghcr.io/l-rocket/duck-ddns`
+
+```bash
+docker run -d --name duck-ddns --restart unless-stopped \
+  -v /path/to/config:/config:ro \
+  ghcr.io/l-rocket/duck-ddns:latest
+```
+
+The container reads its config from `/config/duck-ddns.json` by default. To log to stdout (recommended for Docker), set `"log_file": ""` in your config and view logs with `docker logs -f duck-ddns`.
+
 ## Usage
 
 Run with a specific configuration file:
